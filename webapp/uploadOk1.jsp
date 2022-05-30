@@ -31,7 +31,7 @@
 	DiskFileItemFactory factory = new DiskFileItemFactory();
 
 	// 생략가능
-	// 시스템의 임시 폴더를 임시 촐더로 지정한다
+	// 시스템의 임시 폴더를 임시 폴더로 지정한다
 	ServletContext servletContext = this.getServletConfig().getServletContext();// 서버 어플리케이션 객체 얻기
 	File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");//임시 폴더 얻기
 	factory.setRepository(repository);//임시 폴더를 지정
