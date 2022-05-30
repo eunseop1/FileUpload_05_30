@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="category">
+	<!--  순서대로 모두 얻기 -->
+	<select id="selectList" resultType="categoryVO">
+		SELECT * FROM CATEGORY  ORDER BY REF DESC, seq
+	</select>
+
+	<!-- 원본글 저장하기 -->
+	<insert id="insert" parameterType="categoryVO">
+		INSERT INTO category (idx,REF, item) VALUES (CATEGORY_IDX_SEQ.nextval,CATEGORY_IDX_SEQ.currval,#{item})
+	</insert>
+	
+	<!-- 답변글 저장하기 -->
+	<!-- 1. seq가 나보다 큰것의 값을 1 증가시킨다. -->
+	<update id="updateSeq" parameterType="categoryVO">
+		UPDATE category SET seq = seq + 1 WHERE REF=#{ref} AND seq>#{seq}
+	</update>
+	<!-- 2. ref는 그대로 seq는 +1해서 lev도 +1해서 저장한다. -->
+	<insert id="reply" parameterType="categoryVO">
+		INSERT INTO category 
+			(idx,REF,seq,lev, item) 
+		VALUES 
+			(CATEGORY_IDX_SEQ.nextval,#{ref},#{seq}+1,#{lev}+1,#{item})
+	</insert>
+	
+	<!-- 아이템 수정하기 -->
+	<update id="update" parameterType="categoryVO">
+		update category set item=#{item} where idx=#{idx}
+	</update>
+	<!-- 아이템 삭제하기 : 같은 ref에서 나보다 seq큰값들 중에서 나랑 lev가 같은값이 나오기 전까지를 삭제 -->
+	<!--  1개 얻기 -->
+	<select id="selectByIdx" parameterType="int" resultType="categoryVO">
+		select * from category where idx=#{idx}
+	</select>
+	<!-- 1개 삭제 -->
+	<delete id="delete" parameterType="int">
+		delete from category where idx=#{idx}
+	</delete>
+	<!-- 나와 ref가 같으면서 seq가 같거나 큰값들의 목록을 가져오기 -->
+	<select id="selectSeqList" parameterType="categoryVO" resultType="categoryVO">
+		select * from category where ref=#{ref} and seq>=#{seq} order by seq
+	</select>
+	
+</mapper>
